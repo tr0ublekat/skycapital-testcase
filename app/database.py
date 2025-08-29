@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base
 
 DATABASE_URL = "sqlite+aiosqlite:///./tasks.db"
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
 AsyncLocalSession = async_sessionmaker(
     bind=engine, expire_on_commit=False, autoflush=False, autocommit=False
