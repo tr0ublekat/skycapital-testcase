@@ -31,7 +31,7 @@ async def get_task(
     return task
 
 
-@router.post("/", response_model=schemas.TaskCreate, status_code=201)
+@router.post("/", response_model=schemas.TaskOut, status_code=201)
 async def create_task(
     task: schemas.TaskCreate,
     db: AsyncSession = Depends(database.get_db),
