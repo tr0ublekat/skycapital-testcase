@@ -11,3 +11,7 @@ wheels/
 
 # Ruff cache
 .ruff-cache/
+
+# Sqlite database files
+*.db
+*.sqlite3
