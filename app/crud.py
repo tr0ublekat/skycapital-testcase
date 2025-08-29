@@ -3,7 +3,7 @@ from sqlalchemy.future import select
 from . import models, schemas
 
 
-async def get_tasts(db: AsyncSession, offset: int = 0, limit: int = 100):
+async def get_tasks(db: AsyncSession, offset: int = 0, limit: int = 100):
     """Получение всех задач."""
 
     result = await db.execute(select(models.Task).offset(offset).limit(limit))
