@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
+from datetime import datetime
 
 
 class TaskStatus(str, Enum):
@@ -25,8 +26,8 @@ class TaskOut(BaseModel):
     title: str
     description: Optional[str] = None
     status: TaskStatus
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True
