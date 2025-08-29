@@ -21,5 +21,7 @@ class Task(Base):
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(String(20), default=TaskStatus.CREATED.value, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), default=func.now(), onupdate=func.now()
+    )
