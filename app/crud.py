@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from . import models, schemas
+import app.models as models
+import app.schemas as schemas
 
 
 async def get_tasks(db: AsyncSession, offset: int = 0, limit: int = 100):

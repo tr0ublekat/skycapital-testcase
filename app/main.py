@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from . import database, models
-from .routers import router as task_router
+import app.database as database
+import app.models as models
+from app.routers import router as task_router
 
 
 @asynccontextmanager
