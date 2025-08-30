@@ -1,16 +1,8 @@
-from httpx import ASGITransport, AsyncClient
 import pytest
 from app.schemas import TaskStatus
-from app.main import app
-
-
-@pytest.mark.asyncio
-async def test_test():
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
-        response = await ac.get("/tasks/")
-    assert response.status_code == 200
+import app.crud as crud
+import app.schemas as schemas
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
@@ -163,3 +155,61 @@ async def test_create_task_missing_title(async_client):
     assert response.status_code == 422
     data = response.json()
     assert data["detail"] is not None
+
+
+@pytest.mark.asyncio
+async def test_get_not_found_from_db(async_session: AsyncSession):
+    task = await crud.get_task(async_session, task_id=99999)
+    assert task is None
+
+
+@pytest.mark.asyncio
+async def test_get_from_db(async_session: AsyncSession):
+    new_task = schemas.TaskCreate(title="Test", description="Desc")
+    task = await crud.create_task(async_session, new_task)
+
+    assert task is not None
+    assert task.id is not None
+    assert task.title == "Test"
+
+    fetched = await crud.get_task(async_session, task.id)
+    assert fetched is not None
+    assert fetched.id == task.id
+
+
+@pytest.mark.asyncio
+async def test_update_task_from_db(async_session: AsyncSession):
+    task = await crud.create_task(
+        async_session, schemas.TaskCreate(title="Old", description="Desc")
+    )
+    assert task is not None
+
+    update = schemas.TaskUpdate(title="New")
+    assert update is not None
+    updated = await crud.update_task(async_session, task.id, update)
+    assert updated is not None
+
+    assert updated.title == "New"
+
+
+@pytest.mark.asyncio
+async def test_update_task_not_found_from_db(async_session: AsyncSession):
+    update = schemas.TaskUpdate(title="Ghost")
+    result = await crud.update_task(async_session, 999, update)
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_delete_task_from_db(async_session: AsyncSession):
+    task = await crud.create_task(
+        async_session, schemas.TaskCreate(title="Del", description="D")
+    )
+    assert task is not None
+
+    deleted = await crud.delete_task(async_session, task.id)
+    assert deleted is not None
+    assert deleted.id == task.id
+
+    # Проверяем повторное удаление
+    deleted2 = await crud.delete_task(async_session, task.id)
+    assert deleted2 is None
