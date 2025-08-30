@@ -2,23 +2,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 import app.models as models
 import app.schemas as schemas
+from typing import List
 
 
-async def get_tasks(db: AsyncSession, offset: int = 0, limit: int = 100):
+async def get_tasks(
+    db: AsyncSession, offset: int = 0, limit: int = 100
+) -> List[schemas.TaskOut]:
     """Получение всех задач."""
 
     result = await db.execute(select(models.Task).offset(offset).limit(limit))
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
-async def get_task(db: AsyncSession, task_id: int):
+async def get_task(db: AsyncSession, task_id: int) -> schemas.TaskOut | None:
     """Получение задачи по ID."""
 
     result = await db.execute(select(models.Task).where(models.Task.id == task_id))
     return result.scalar_one_or_none()
 
 
-async def create_task(db: AsyncSession, task: schemas.TaskCreate):
+async def create_task(
+    db: AsyncSession, task: schemas.TaskCreate
+) -> schemas.TaskOut | None:
     """Создание новой задачи."""
 
     db_task = models.Task(title=task.title, description=task.description)
@@ -28,7 +33,9 @@ async def create_task(db: AsyncSession, task: schemas.TaskCreate):
     return db_task
 
 
-async def update_task(db: AsyncSession, task_id: int, task: schemas.TaskUpdate):
+async def update_task(
+    db: AsyncSession, task_id: int, task: schemas.TaskUpdate
+) -> schemas.TaskOut | None:
     """Обновление задачи по ID."""
 
     db_task = await get_task(db, task_id)
@@ -44,7 +51,7 @@ async def update_task(db: AsyncSession, task_id: int, task: schemas.TaskUpdate):
     return db_task
 
 
-async def delete_task(db: AsyncSession, task_id: int):
+async def delete_task(db: AsyncSession, task_id: int) -> schemas.TaskOut | None:
     """Удаление задачи по ID."""
 
     db_task = await get_task(db, task_id)
