@@ -10,8 +10,12 @@ wheels/
 .venv
 
 # Ruff cache
-.ruff-cache/
+.ruff_cache/
 
 # Sqlite database files
 *.db
 *.sqlite3
+
+# pytest cache
+.coverage
+.pytest_cache/
